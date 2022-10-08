@@ -21,14 +21,13 @@
  */
 
 #include <functional>
+
 #include <string>
+#include <string_view>
+
 #include <sstream>
 
 #include <cctype>
-
-#ifdef ALPHANUM_ASSERTS
-#include <cassert>
-#endif
 
 #ifdef DOJDEBUG
 #include <iostream>
@@ -59,7 +58,7 @@ namespace AlphaNumeric
          * @param r C-style string
          * @return negative if left<right, 0 if left==right, positive if left>right.
          */
-        int
+        static inline int
         alphanum_impl(const char* l, const char* r)
         {
             Mode mode = Mode::STRING;
@@ -135,7 +134,7 @@ namespace AlphaNumeric
      * @return negative if left<right, 0 if left==right, positive if left>right.
      */
     template<typename lT, typename rT>
-    int
+    static inline int
     alphanum_comp(const lT& left, const rT& right)
     {
 #ifdef DOJDEBUG
@@ -154,129 +153,15 @@ namespace AlphaNumeric
      * the "Alphanum Algorithm" which produces more human-friendly
      * results.
      *
-     * @return negative if l<r, 0 if l==r, positive if l>r.
+     * @return negative if left<right, 0 if left==right, positive if left>right.
      */
-    template<>
-    int
-    alphanum_comp<std::string>(const std::string& l, const std::string& r)
+    static inline int
+    alphanum_comp(std::string_view l, std::string_view r)
     {
 #ifdef DOJDEBUG
-        std::clog << "alphanum_comp<std::string,std::string> " << l << "," << r << std::endl;
+        std::clog << "alphanum_comp<std::string_view,std::string_view> " << l << "," << r << std::endl;
 #endif
-        return alphanum_impl(l.c_str(), r.c_str());
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-
-    // now follow a lot of overloaded alphanum_comp() functions to get a
-    // direct call to alphanum_impl() upon the various combinations of c
-    // and c++ strings.
-
-    /**
-     * Compare l and r with the same semantics as strcmp(), but with
-     * the "Alphanum Algorithm" which produces more human-friendly
-     * results.
-     *
-     * @return negative if l<r, 0 if l==r, positive if l>r.
-     */
-    int
-    alphanum_comp(char* l, char* r)
-    {
-#ifdef ALPHANUM_ASSERTS
-        assert(l);
-        assert(r);
-#endif
-#ifdef DOJDEBUG
-        std::clog << "alphanum_comp<char*,char*> " << l << "," << r << std::endl;
-#endif
-        return alphanum_impl(l, r);
-    }
-
-    int
-    alphanum_comp(const char* l, const char* r)
-    {
-#ifdef ALPHANUM_ASSERTS
-        assert(l);
-        assert(r);
-#endif
-#ifdef DOJDEBUG
-        std::clog << "alphanum_comp<const char*,const char*> " << l << "," << r << std::endl;
-#endif
-        return alphanum_impl(l, r);
-    }
-
-    int
-    alphanum_comp(char* l, const char* r)
-    {
-#ifdef ALPHANUM_ASSERTS
-        assert(l);
-        assert(r);
-#endif
-#ifdef DOJDEBUG
-        std::clog << "alphanum_comp<char*,const char*> " << l << "," << r << std::endl;
-#endif
-        return alphanum_impl(l, r);
-    }
-
-    int
-    alphanum_comp(const char* l, char* r)
-    {
-#ifdef ALPHANUM_ASSERTS
-        assert(l);
-        assert(r);
-#endif
-#ifdef DOJDEBUG
-        std::clog << "alphanum_comp<const char*,char*> " << l << "," << r << std::endl;
-#endif
-        return alphanum_impl(l, r);
-    }
-
-    int
-    alphanum_comp(const std::string& l, char* r)
-    {
-#ifdef ALPHANUM_ASSERTS
-        assert(r);
-#endif
-#ifdef DOJDEBUG
-        std::clog << "alphanum_comp<std::string,char*> " << l << "," << r << std::endl;
-#endif
-        return alphanum_impl(l.c_str(), r);
-    }
-
-    int
-    alphanum_comp(char* l, const std::string& r)
-    {
-#ifdef ALPHANUM_ASSERTS
-        assert(l);
-#endif
-#ifdef DOJDEBUG
-        std::clog << "alphanum_comp<char*,std::string> " << l << "," << r << std::endl;
-#endif
-        return alphanum_impl(l, r.c_str());
-    }
-
-    int
-    alphanum_comp(const std::string& l, const char* r)
-    {
-#ifdef ALPHANUM_ASSERTS
-        assert(r);
-#endif
-#ifdef DOJDEBUG
-        std::clog << "alphanum_comp<std::string,const char*> " << l << "," << r << std::endl;
-#endif
-        return alphanum_impl(l.c_str(), r);
-    }
-
-    int
-    alphanum_comp(const char* l, const std::string& r)
-    {
-#ifdef ALPHANUM_ASSERTS
-        assert(l);
-#endif
-#ifdef DOJDEBUG
-        std::clog << "alphanum_comp<const char*,std::string> " << l << "," << r << std::endl;
-#endif
-        return alphanum_impl(l, r.c_str());
+        return alphanum_impl(l.data(), r.data());
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -294,5 +179,4 @@ namespace AlphaNumeric
             return alphanum_comp(left, right) < 0;
         }
     };
-
 } // namespace AlphaNumeric
