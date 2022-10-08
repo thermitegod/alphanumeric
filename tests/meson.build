@@ -1,7 +1,7 @@
 project(
   'test_suite', ['c', 'cpp'],
   version : '1.0.0',
-  license : 'GPL3',
+  license : 'MIT',
   default_options : [
     'cpp_std=c++20',
     'warning_level=3',
@@ -15,6 +15,7 @@ result = [ 'Passed options:' ]
 c = meson.get_compiler('c')
 cpp = meson.get_compiler('cpp')
 c_id = c.get_id()
+cpp_id = cpp.get_id()
 cross = meson.is_cross_build()
 sh = find_program('sh')
 
@@ -41,27 +42,29 @@ cflags_opt += [
   [ '-Weffc++' ],
   [ '-pedantic' ],
   [ '-pedantic-errors' ],
-  [ '-Waggregate-return' ],
+  #[ '-Waggregate-return' ],
   [ '-Wcast-qual' ],
   [ '-Wchar-subscripts' ],
   [ '-Wcomment' ],
   #[ '-Wconversion' ],
   [ '-Wdisabled-optimization' ],
-  [ '-Wfloat-equal' ],
+  #[ '-Wdouble-promotion' ],
+  #[ '-Wfloat-equal' ],
   [ '-Wformat' ],
   [ '-Wformat=2' ],
+  #[ '-Wformat-truncation' ],
   [ '-Wformat-nonliteral' ],
   [ '-Wformat-security' ],
   [ '-Wformat-y2k' ],
-  [ '-Wimplicit' ],
+  #[ '-Wimplicit' ],
   [ '-Wimplicit-fallthrough' ],
   [ '-Wimport' ],
-  [ '-Wint-conversion' ],
+  #[ '-Wint-conversion' ],
   [ '-Winit-self' ],
-  [ '-Winline' ],
+  #[ '-Winline' ],
   [ '-Winvalid-pch' ],
-  [ '-Wlong-long' ],
-  [ '-Wmissing-braces' ],
+  #[ '-Wlong-long' ],
+  #[ '-Wmissing-braces' ],
   [ '-Wmissing-field-initializers' ],
   [ '-Wmissing-format-attribute' ],
   [ '-Wmissing-include-dirs' ],
@@ -80,6 +83,7 @@ cflags_opt += [
   [ '-Wswitch-default' ],
   [ '-Wswitch-enum' ],
   [ '-Wtrigraphs' ],
+  [ '-Wundef' ],
   [ '-Wuninitialized' ],
   [ '-Wunknown-pragmas' ],
   [ '-Wunreachable-code' ],
@@ -104,10 +108,12 @@ ldflags_opt += [
 add_global_arguments(cflags_opt, language: ['c', 'cpp'])
 add_global_link_arguments(ldflags_opt, language: ['c', 'cpp'])
 
-dep_catch2 = dependency('catch2')
+dep_gtest = dependency('gtest')
 
 sources = [
-  'main.cxx',
+  'src/main.cxx',
+
+  'src/sort.cxx',
 ]
 
 target_name = 'test_suite'
@@ -119,6 +125,6 @@ test_suite = build_target(
   target_type: target_type,
   install : false,
   dependencies: [
-    dep_catch2,
+    dep_gtest,
   ],
 )
