@@ -1,0 +1,37 @@
+name: Build master
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build_master:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo xargs --arg-file=${{ github.workspace }}/.github/workflows/build-dependencies.txt apt-get install -qq
+
+        # the versions in ubuntu repos are too old
+        sudo python3 -m pip install --quiet meson ninja
+
+        # confirm that the tools are installed
+        # the build system doesn't fail when they are not
+        meson --version
+        ninja --version
+    - name: GCC
+      run: |
+        mkdir ./tests/build_gcc
+        cd ./tests/build_gcc
+        CC=gcc CXX=g++ LD=ld.bfd meson ..
+        ninja
+        ./test_suite
+    - name: Clang
+      run: |
+        mkdir ./tests/build_clang
+        cd ./tests/build_clang
+        CC=clang CXX=clang++ LD=ld.lld meson ..
+        ninja
+        ./test_suite
