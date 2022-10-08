@@ -42,6 +42,12 @@ namespace AlphaNumeric
 {
     namespace
     {
+        enum class Mode
+        {
+            STRING,
+            NUMBER
+        };
+
         /**
          * compare l and r with strcmp() semantics, but using
          * the "Alphanum Algorithm". This function is designed to read
@@ -56,15 +62,11 @@ namespace AlphaNumeric
         int
         alphanum_impl(const char* l, const char* r)
         {
-            enum mode_t
-            {
-                STRING,
-                NUMBER
-            } mode = STRING;
+            Mode mode = Mode::STRING;
 
             while (*l && *r)
             {
-                if (mode == STRING)
+                if (mode == Mode::STRING)
                 {
                     char l_char, r_char;
                     while ((l_char = *l) && (r_char = *r))
@@ -75,7 +77,7 @@ namespace AlphaNumeric
                         // if both characters are digits, we continue in NUMBER mode
                         if (l_digit && r_digit)
                         {
-                            mode = NUMBER;
+                            mode = Mode::NUMBER;
                             break;
                         }
                         // if only the left character is a digit, we have a result
@@ -111,7 +113,7 @@ namespace AlphaNumeric
                         return diff;
 
                     // otherwise we process the next substring in STRING mode
-                    mode = STRING;
+                    mode = Mode::STRING;
                 }
             }
 
